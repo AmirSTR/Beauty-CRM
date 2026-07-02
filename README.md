@@ -110,3 +110,23 @@ src/
 - Оплаты пересчитывают `appointment.paymentStatus`.
 - После завершения записи создается follow-up напоминание через 25 дней.
 - Блок “Кому написать сегодня” показывает клиентов, у которых последний завершенный визит был 25+ дней назад и нет будущей активной записи.
+## Railway deploy
+
+Проект подготовлен для Railway через `railway.json`.
+
+1. В Railway создайте новый Project и подключите GitHub repo `AmirSTR/Beauty-CRM`.
+2. Добавьте сервис PostgreSQL: `+ New` -> `Database` -> `PostgreSQL`.
+3. В Variables веб-сервиса добавьте reference variable `DATABASE_URL` из PostgreSQL-сервиса.
+4. Добавьте `AUTH_SECRET` со случайной длинной строкой.
+5. Railway возьмет команды из `railway.json`:
+   - build: `npm run build`
+   - pre-deploy: `npm run db:deploy`
+   - start: `npm run start`
+6. После первого успешного деплоя можно заполнить демо-данные вручную из Railway shell:
+
+```bash
+npm run seed
+```
+
+`prisma/migrations` уже содержит initial migration, поэтому таблицы создаются через `prisma migrate deploy` перед запуском приложения.
+
