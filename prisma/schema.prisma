@@ -1,0 +1,271 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  Master
+}
+
+enum ClientSource {
+  Instagram
+  TikTok
+  Referral
+  WhatsApp
+  Telegram
+  GoogleMaps
+  TwoGIS
+  Ads
+  Other
+}
+
+enum ClientStatus {
+  New
+  Active
+  Regular
+  Sleeping
+  VIP
+  Problem
+}
+
+enum AppointmentStatus {
+  New
+  Confirmed
+  Completed
+  Cancelled
+  NoShow
+  Rescheduled
+}
+
+enum PaymentStatus {
+  Unpaid
+  PartiallyPaid
+  Paid
+  Refunded
+  Pending
+  Partial
+}
+
+enum PaymentMethod {
+  Cash
+  Card
+  Transfer
+  Online
+  Other
+}
+
+enum ReminderType {
+  AppointmentClient
+  AppointmentMaster
+  FollowUp
+  Birthday
+}
+
+enum ReminderStatus {
+  Pending
+  Done
+  Cancelled
+}
+
+enum MessageTemplateType {
+  AppointmentReminder
+  FollowUp
+  Birthday
+  Winback
+  Custom
+}
+
+model User {
+  id               String            @id @default(cuid())
+  name             String
+  email            String            @unique
+  passwordHash     String
+  role             UserRole          @default(Master)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  profile          MasterProfile?
+  services         Service[]
+  clients          Client[]
+  appointments     Appointment[]
+  payments         Payment[]
+  reminders        Reminder[]
+  clientNotes      ClientNote[]
+  messageTemplates MessageTemplate[]
+
+  @@index([createdAt])
+}
+
+model MasterProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  specialization String?
+  city           String?
+  address        String?
+  phone          String?
+  instagram      String?
+  telegram       String?
+  whatsapp       String?
+  currency       String   @default("KZT")
+  workStartTime  String   @default("09:00")
+  workEndTime    String   @default("19:00")
+  workDays       String   @default("1,2,3,4,5")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Service {
+  id              String        @id @default(cuid())
+  userId          String
+  name            String
+  description     String?
+  category        String?
+  durationMinutes Int
+  price           Decimal       @db.Decimal(10, 2)
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments    Appointment[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Client {
+  id           String         @id @default(cuid())
+  userId       String
+  name         String
+  phone        String?
+  email        String?
+  birthDate    DateTime?
+  instagram    String?
+  telegram     String?
+  source       ClientSource   @default(Other)
+  notes        String?
+  allergies    String?
+  preferences  String?
+  status       ClientStatus   @default(New)
+  isArchived   Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  payments     Payment[]
+  clientNotes  ClientNote[]
+  reminders    Reminder[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Appointment {
+  id            String            @id @default(cuid())
+  userId        String
+  clientId      String
+  serviceId     String
+  date          DateTime
+  startTime     String
+  endTime       String
+  price         Decimal           @db.Decimal(10, 2)
+  status        AppointmentStatus @default(New)
+  paymentStatus PaymentStatus     @default(Unpaid)
+  comment       String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client        Client            @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  service       Service           @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  payments      Payment[]
+  reminders     Reminder[]
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([serviceId])
+  @@index([date])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  userId        String
+  appointmentId String
+  clientId      String
+  amount        Decimal       @db.Decimal(10, 2)
+  method        PaymentMethod @default(Cash)
+  status        PaymentStatus @default(Paid)
+  paidAt        DateTime      @default(now())
+  comment       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointment   Appointment   @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  client        Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([appointmentId])
+  @@index([clientId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Reminder {
+  id            String         @id @default(cuid())
+  userId        String
+  clientId      String?
+  appointmentId String?
+  type          ReminderType
+  message       String
+  remindAt      DateTime
+  status        ReminderStatus @default(Pending)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client        Client?        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  appointment   Appointment?   @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([appointmentId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ClientNote {
+  id        String   @id @default(cuid())
+  userId    String
+  clientId  String
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([createdAt])
+}
+
+model MessageTemplate {
+  id        String              @id @default(cuid())
+  userId    String
+  name      String
+  type      MessageTemplateType @default(Custom)
+  body      String
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}

@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: #fbfaf8;
+  color: #202124;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-lg border border-line bg-white shadow-panel;
+  }
+
+  .section {
+    @apply border-t border-line px-4 py-5 sm:px-6;
+  }
+
+  .btn-primary {
+    @apply inline-flex min-h-10 items-center justify-center rounded-md bg-sage px-4 py-2 text-sm font-semibold text-white transition hover:bg-sage/90 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-10 items-center justify-center rounded-md border border-line bg-white px-3 py-2 text-sm font-semibold text-ink transition hover:border-sage hover:text-sage disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .metric {
+    @apply rounded-lg border border-line bg-white p-4 shadow-panel;
+  }
+
+  .table-wrap {
+    @apply overflow-x-auto rounded-lg border border-line bg-white;
+  }
+
+  .table {
+    @apply min-w-full divide-y divide-line text-left text-sm;
+  }
+
+  .table th {
+    @apply bg-zinc-50 px-4 py-3 text-xs font-semibold uppercase text-zinc-500;
+  }
+
+  .table td {
+    @apply px-4 py-3 align-top;
+  }
+}
