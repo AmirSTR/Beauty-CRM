@@ -5,12 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node .next/standalone/server.js",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "postinstall": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "postbuild": "node scripts/copy-standalone-assets.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
