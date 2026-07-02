@@ -116,7 +116,7 @@ src/
 
 1. В Railway создайте новый Project и подключите GitHub repo `AmirSTR/Beauty-CRM`.
 2. Добавьте сервис PostgreSQL: `+ New` -> `Database` -> `PostgreSQL`.
-3. В Variables веб-сервиса добавьте reference variable `DATABASE_URL` из PostgreSQL-сервиса.
+3. В Variables веб-сервиса удалите `DATABASE_URL`, если он смотрит на `localhost`, и добавьте reference variable `DATABASE_URL` из PostgreSQL-сервиса, например `${{Postgres.DATABASE_URL}}` или выберите его через autocomplete.
 4. Добавьте `AUTH_SECRET` со случайной длинной строкой.
 5. Railway возьмет команды из `railway.json`:
    - build: `npm run build`
@@ -128,5 +128,5 @@ src/
 npm run seed
 ```
 
-`prisma/migrations` уже содержит initial migration, поэтому таблицы создаются через `prisma migrate deploy` перед запуском приложения.
+Важно: `DATABASE_URL` на Railway не должен содержать `localhost:5432`. Он должен ссылаться на Railway PostgreSQL service. `prisma/migrations` уже содержит initial migration, поэтому таблицы создаются через `prisma migrate deploy` перед запуском приложения.
 
