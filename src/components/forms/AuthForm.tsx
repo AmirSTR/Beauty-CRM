@@ -39,7 +39,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           : await loginAction(values as LoginValues);
 
       if (!result.ok) {
-        setError(result.error ?? "Не удалось выполнить действие.");
+        setError(result.error ?? "Не получилось. Проверьте данные и попробуйте еще раз.");
         return;
       }
 
@@ -78,7 +78,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       </label>
 
       <button className="btn-primary w-full" type="submit" disabled={isPending}>
-        {isPending ? "Подождите..." : mode === "login" ? "Войти" : "Создать аккаунт"}
+        {isPending ? "Подождите..." : mode === "login" ? "Войти" : "Создать"}
       </button>
     </form>
   );

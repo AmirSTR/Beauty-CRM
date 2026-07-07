@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Beauty CRM",
-  description: "MVP CRM для бьюти-мастеров"
+  title: "Моя CRM",
+  description: "CRM для бьюти-мастера"
 };
 
 export default function RootLayout({

@@ -25,7 +25,7 @@ function addMinutes(time: string, minutes: number) {
 }
 
 async function main() {
-  const email = "demo@beautycrm.app";
+  const email = "master@example.com";
   const existingUser = await prisma.user.findUnique({ where: { email } });
 
   if (existingUser) {
@@ -42,7 +42,7 @@ async function main() {
 
   const user = await prisma.user.create({
     data: {
-      name: "Demo Master",
+      name: "Master",
       email,
       passwordHash: await hashPassword("password123"),
       profile: {
@@ -51,8 +51,8 @@ async function main() {
           city: "Алматы",
           address: "ул. Абая, 10",
           phone: "+7 700 000 00 00",
-          instagram: "@demo_beauty",
-          telegram: "@demo_beauty",
+          instagram: "@beauty_master",
+          telegram: "@beauty_master",
           whatsapp: "+77000000000",
           currency: "KZT",
           workStartTime: "09:00",
@@ -81,7 +81,7 @@ async function main() {
           category,
           durationMinutes,
           price,
-          description: `${name}: демо-услуга для проверки MVP.`
+          description: `${name}: пример услуги.`
         }
       })
     )
@@ -112,7 +112,7 @@ async function main() {
           status,
           preferences: index % 2 === 0 ? "Любит утренние слоты" : "Предпочитает вечер",
           allergies: index === 2 ? "Чувствительность к красителю" : null,
-          notes: "Демо-клиент для проверки истории."
+          notes: "Клиент из начального набора данных."
         }
       })
     )
@@ -271,7 +271,7 @@ async function main() {
   });
 
   console.log("Seed complete");
-  console.log("Email: demo@beautycrm.app");
+  console.log("Email: master@example.com");
   console.log("Password: password123");
 }
 
