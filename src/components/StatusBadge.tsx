@@ -1,3 +1,5 @@
+import { displayLabel } from "@/lib/constants";
+
 const appointmentColors: Record<string, string> = {
   New: "bg-zinc-100 text-zinc-700",
   Confirmed: "bg-sky-100 text-sky-800",
@@ -15,13 +17,14 @@ const appointmentColors: Record<string, string> = {
   Problem: "bg-red-100 text-red-800",
   Sleeping: "bg-stone-200 text-stone-800",
   Regular: "bg-emerald-100 text-emerald-800",
-  Active: "bg-sky-100 text-sky-800"
+  Active: "bg-sky-100 text-sky-800",
+  Archived: "bg-stone-200 text-stone-800"
 };
 
 export function StatusBadge({ value }: { value: string }) {
   return (
     <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${appointmentColors[value] ?? "bg-zinc-100 text-zinc-700"}`}>
-      {value}
+      {displayLabel(value)}
     </span>
   );
 }

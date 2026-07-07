@@ -2,24 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  BarChart3,
-  CalendarDays,
-  Home,
-  Scissors,
-  Settings,
-  Users,
-  WalletCards
-} from "lucide-react";
+import { CalendarDays, Home, Scissors, Settings, Users, WalletCards } from "lucide-react";
 
 const items = [
-  { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/clients", label: "Clients", icon: Users },
-  { href: "/services", label: "Services", icon: Scissors },
-  { href: "/finance", label: "Finance", icon: WalletCards },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/settings", label: "Settings", icon: Settings }
+  { href: "/dashboard", label: "Главная", icon: Home },
+  { href: "/calendar", label: "Записи", icon: CalendarDays },
+  { href: "/clients", label: "Клиенты", icon: Users },
+  { href: "/services", label: "Услуги", icon: Scissors },
+  { href: "/finance", label: "Деньги", icon: WalletCards },
+  { href: "/settings", label: "Настройки", icon: Settings }
 ];
 
 export function SidebarNav({ compact = false }: { compact?: boolean }) {
@@ -37,6 +28,7 @@ export function SidebarNav({ compact = false }: { compact?: boolean }) {
             href={item.href}
             className={[
               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition",
+              compact ? "shrink-0" : "",
               active ? "bg-sage text-white" : "text-zinc-700 hover:bg-zinc-100 hover:text-ink"
             ].join(" ")}
           >

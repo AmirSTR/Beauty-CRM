@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { saveClientAction } from "@/app/actions";
-import { CLIENT_SOURCES, CLIENT_STATUSES } from "@/lib/constants";
+import { CLIENT_SOURCES, CLIENT_STATUSES, displayLabel } from "@/lib/constants";
 import { clientSchema } from "@/lib/validations";
 import { FieldError, FormError, inputClass, labelClass, textareaClass } from "@/components/forms/FormShell";
 
@@ -115,7 +115,7 @@ export function ClientForm({
         <select className={inputClass} {...form.register("source")}>
           {CLIENT_SOURCES.map((source) => (
             <option key={source} value={source}>
-              {source}
+              {displayLabel(source)}
             </option>
           ))}
         </select>
@@ -126,7 +126,7 @@ export function ClientForm({
         <select className={inputClass} {...form.register("status")}>
           {CLIENT_STATUSES.map((status) => (
             <option key={status} value={status}>
-              {status}
+              {displayLabel(status)}
             </option>
           ))}
         </select>

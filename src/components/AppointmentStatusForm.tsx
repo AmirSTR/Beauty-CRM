@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { updateAppointmentStatusAction } from "@/app/actions";
-import { APPOINTMENT_STATUSES } from "@/lib/constants";
+import { APPOINTMENT_STATUSES, displayLabel } from "@/lib/constants";
 
 export function AppointmentStatusForm({
   id,
@@ -27,7 +27,7 @@ export function AppointmentStatusForm({
       >
         {APPOINTMENT_STATUSES.map((item) => (
           <option key={item} value={item}>
-            {item}
+            {displayLabel(item)}
           </option>
         ))}
       </select>

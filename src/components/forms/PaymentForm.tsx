@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { savePaymentAction } from "@/app/actions";
-import { PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/constants";
+import { PAYMENT_METHODS, PAYMENT_STATUSES, displayLabel } from "@/lib/constants";
 import { paymentSchema } from "@/lib/validations";
 import { FieldError, FormError, inputClass, labelClass, textareaClass } from "@/components/forms/FormShell";
 
@@ -101,7 +101,7 @@ export function PaymentForm({
         <select className={inputClass} {...form.register("method")}>
           {PAYMENT_METHODS.map((method) => (
             <option key={method} value={method}>
-              {method}
+              {displayLabel(method)}
             </option>
           ))}
         </select>
@@ -112,7 +112,7 @@ export function PaymentForm({
         <select className={inputClass} {...form.register("status")}>
           {PAYMENT_STATUSES.map((status) => (
             <option key={status} value={status}>
-              {status}
+              {displayLabel(status)}
             </option>
           ))}
         </select>

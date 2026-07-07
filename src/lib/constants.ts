@@ -54,6 +54,49 @@ export const MESSAGE_TEMPLATE_TYPES = [
   "Custom"
 ] as const;
 
+export const DISPLAY_LABELS: Record<string, string> = {
+  Instagram: "Instagram",
+  TikTok: "TikTok",
+  Referral: "Рекомендация",
+  WhatsApp: "WhatsApp",
+  Telegram: "Telegram",
+  GoogleMaps: "Google Maps",
+  TwoGIS: "2GIS",
+  Ads: "Реклама",
+  Other: "Другое",
+  New: "Новая",
+  Active: "Активно",
+  Regular: "Постоянный",
+  Sleeping: "Давно не был",
+  VIP: "VIP",
+  Problem: "Проблемный",
+  Archived: "В архиве",
+  Confirmed: "Подтверждена",
+  Completed: "Готово",
+  Cancelled: "Отменена",
+  NoShow: "Не пришел",
+  Rescheduled: "Перенесена",
+  Unpaid: "Не оплачено",
+  PartiallyPaid: "Частично",
+  Paid: "Оплачено",
+  Refunded: "Возврат",
+  Pending: "Ожидает",
+  Partial: "Частично",
+  Cash: "Наличные",
+  Card: "Карта",
+  Transfer: "Перевод",
+  Online: "Онлайн",
+  AppointmentReminder: "Напоминание о записи",
+  FollowUp: "Написать после визита",
+  Birthday: "День рождения",
+  Winback: "Вернуть клиента",
+  Custom: "Свой шаблон"
+};
+
+export function displayLabel(value: string) {
+  return DISPLAY_LABELS[value] ?? value;
+}
+
 export const CURRENCIES = ["KZT", "RUB", "USD", "EUR"] as const;
 
 export const WORK_DAYS = [

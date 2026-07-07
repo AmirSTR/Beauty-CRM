@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarPlus, MessageSquareText } from "lucide-react";
+import { CalendarPlus, UserRound } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
 import { buildFollowUpMessage } from "@/lib/business";
@@ -55,19 +55,27 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
     .sort((a, b) => a.date.getTime() - b.date.getTime())[0];
   const serviceName = lastVisit?.service.name;
   const followUpMessage = buildFollowUpMessage(client.name, serviceName);
+  const recentAppointments = client.appointments.slice(0, 5);
 
   const paymentAppointmentOptions = client.appointments.map((appointment) => ({
     id: appointment.id,
-    label: `${shortDate(appointment.date)} ${appointment.startTime} · ${appointment.service.name} · ${client.name}`,
+    label: `${shortDate(appointment.date)} ${appointment.startTime} - ${appointment.service.name} - ${client.name}`,
     price: Number(appointment.price)
   }));
+
+  const contacts = [
+    { label: "Телефон", value: client.phone },
+    { label: "Email", value: client.email },
+    { label: "Instagram", value: client.instagram },
+    { label: "Telegram", value: client.telegram }
+  ].filter((item) => item.value);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <Link href="/clients" className="text-sm font-medium text-sage">
-            ← Clients
+            Назад к клиентам
           </Link>
           <h1 className="mt-1 text-3xl font-semibold">{client.name}</h1>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -78,20 +86,15 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
         <div className="flex flex-wrap gap-2">
           <Link href="/calendar" className="btn-primary inline-flex gap-2">
             <CalendarPlus className="h-4 w-4" />
-            Создать запись
+            Записать
           </Link>
           <CopyButton text={followUpMessage} />
-          {client.isArchived ? (
-            <ConfirmActionButton id={client.id} kind="restoreClient" label="Восстановить" confirmText="Вернуть клиента из архива?" />
-          ) : (
-            <ConfirmActionButton id={client.id} kind="archiveClient" label="Архивировать" confirmText="Архивировать клиента?" />
-          )}
         </div>
       </div>
 
-      <section className="grid gap-4 md:grid-cols-5">
+      <section className="grid gap-4 md:grid-cols-4">
         <div className="metric">
-          <p className="text-sm text-zinc-500">Визиты</p>
+          <p className="text-sm text-zinc-500">Визитов</p>
           <p className="mt-2 text-2xl font-semibold">{completedAppointments.length}</p>
         </div>
         <div className="metric">
@@ -103,63 +106,83 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
           <p className="mt-2 text-2xl font-semibold">{money(averageCheck, currency)}</p>
         </div>
         <div className="metric">
-          <p className="text-sm text-zinc-500">Последний визит</p>
-          <p className="mt-2 text-lg font-semibold">{lastVisit ? shortDate(lastVisit.date) : "Нет"}</p>
-        </div>
-        <div className="metric">
           <p className="text-sm text-zinc-500">Следующая запись</p>
           <p className="mt-2 text-lg font-semibold">{nextAppointment ? `${shortDate(nextAppointment.date)} ${nextAppointment.startTime}` : "Нет"}</p>
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+      <section className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
         <div className="panel">
-          <div className="section">
-            <h2 className="text-lg font-semibold">Карточка клиента</h2>
-            <p className="text-sm text-zinc-500">Контакты, предпочтения и аллергии</p>
+          <div className="section flex items-center gap-2">
+            <UserRound className="h-5 w-5 text-sage" />
+            <h2 className="text-lg font-semibold">Контакты</h2>
           </div>
-          <div className="section">
-            <ClientForm
-              compact
-              initial={{
-                id: client.id,
-                name: client.name,
-                phone: client.phone ?? "",
-                email: client.email ?? "",
-                birthDate: client.birthDate ? isoDate(client.birthDate) : "",
-                instagram: client.instagram ?? "",
-                telegram: client.telegram ?? "",
-                source: client.source,
-                notes: client.notes ?? "",
-                allergies: client.allergies ?? "",
-                preferences: client.preferences ?? "",
-                status: client.status
-              }}
-            />
+          <div className="section space-y-4">
+            {contacts.length === 0 ? (
+              <EmptyState title="Контактов пока нет." />
+            ) : (
+              <div className="space-y-3">
+                {contacts.map((item) => (
+                  <div key={item.label}>
+                    <p className="text-xs uppercase text-zinc-500">{item.label}</p>
+                    <p className="font-medium">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(client.preferences || client.allergies || client.notes) && (
+              <div className="space-y-3 rounded-lg border border-line bg-zinc-50 p-4 text-sm">
+                {client.preferences && <p><span className="font-semibold">Любит: </span>{client.preferences}</p>}
+                {client.allergies && <p><span className="font-semibold">Аллергии: </span>{client.allergies}</p>}
+                {client.notes && <p><span className="font-semibold">Важно: </span>{client.notes}</p>}
+              </div>
+            )}
+            <details className="rounded-lg border border-line p-4">
+              <summary className="cursor-pointer list-none font-semibold">Изменить данные клиента</summary>
+              <div className="mt-4 border-t border-line pt-4">
+                <ClientForm
+                  compact
+                  initial={{
+                    id: client.id,
+                    name: client.name,
+                    phone: client.phone ?? "",
+                    email: client.email ?? "",
+                    birthDate: client.birthDate ? isoDate(client.birthDate) : "",
+                    instagram: client.instagram ?? "",
+                    telegram: client.telegram ?? "",
+                    source: client.source,
+                    notes: client.notes ?? "",
+                    allergies: client.allergies ?? "",
+                    preferences: client.preferences ?? "",
+                    status: client.status
+                  }}
+                />
+              </div>
+            </details>
           </div>
         </div>
 
         <div className="panel">
-          <div className="section flex items-center gap-2">
-            <MessageSquareText className="h-5 w-5 text-clay" />
-            <h2 className="text-lg font-semibold">Заметки</h2>
+          <div className="section">
+            <h2 className="text-lg font-semibold">Последние визиты</h2>
           </div>
           <div className="section">
-            <NoteForm clientId={client.id} />
-          </div>
-          <div className="section">
-            {client.clientNotes.length === 0 ? (
-              <EmptyState title="Заметок пока нет." />
+            {recentAppointments.length === 0 ? (
+              <EmptyState title="Записей пока нет." />
             ) : (
               <div className="space-y-3">
-                {client.clientNotes.map((note) => (
-                  <div key={note.id} className="rounded-lg border border-line p-4">
+                {recentAppointments.map((appointment) => (
+                  <div key={appointment.id} className="rounded-lg border border-line p-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                       <div>
-                        <p className="text-sm">{note.note}</p>
-                        <p className="mt-2 text-xs text-zinc-500">{shortDate(note.createdAt)}</p>
+                        <p className="font-semibold">{appointment.service.name}</p>
+                        <p className="text-sm text-zinc-600">{shortDate(appointment.date)} {appointment.startTime}-{appointment.endTime}</p>
+                        <p className="mt-1 text-sm text-zinc-500">{money(Number(appointment.price), currency)}</p>
                       </div>
-                      <ConfirmActionButton id={note.id} kind="deleteNote" label="Удалить" confirmText="Удалить заметку?" />
+                      <div className="flex flex-wrap gap-2">
+                        <StatusBadge value={appointment.status} />
+                        <StatusBadge value={appointment.paymentStatus} />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -171,9 +194,79 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
 
       <section className="panel">
         <div className="section">
-          <h2 className="text-lg font-semibold">История визитов</h2>
+          <h2 className="text-lg font-semibold">Заметки</h2>
         </div>
-        <div className="section">
+        <div className="section grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+          <details className="rounded-lg border border-line p-4" open={client.clientNotes.length === 0}>
+            <summary className="cursor-pointer list-none font-semibold">Добавить заметку</summary>
+            <div className="mt-4 border-t border-line pt-4">
+              <NoteForm clientId={client.id} />
+            </div>
+          </details>
+          {client.clientNotes.length === 0 ? (
+            <EmptyState title="Заметок пока нет." />
+          ) : (
+            <div className="space-y-3">
+              {client.clientNotes.slice(0, 4).map((note) => (
+                <div key={note.id} className="rounded-lg border border-line p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-sm">{note.note}</p>
+                      <p className="mt-2 text-xs text-zinc-500">{shortDate(note.createdAt)}</p>
+                    </div>
+                    <details>
+                      <summary className="cursor-pointer list-none text-sm font-medium text-zinc-500">Еще</summary>
+                      <div className="mt-2">
+                        <ConfirmActionButton id={note.id} kind="deleteNote" label="Удалить" confirmText="Удалить заметку?" />
+                      </div>
+                    </details>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <details className="panel">
+        <summary className="section cursor-pointer list-none">
+          <h2 className="text-lg font-semibold">Еще: оплаты, полная история и архив</h2>
+        </summary>
+        <div className="section grid gap-6 xl:grid-cols-2">
+          <div>
+            <h3 className="mb-3 font-semibold">Добавить оплату</h3>
+            {paymentAppointmentOptions.length === 0 ? (
+              <EmptyState title="Сначала создайте запись." />
+            ) : (
+              <PaymentForm appointments={paymentAppointmentOptions} />
+            )}
+          </div>
+          <div>
+            <h3 className="mb-3 font-semibold">История оплат</h3>
+            {client.payments.length === 0 ? (
+              <EmptyState title="Оплат пока нет." />
+            ) : (
+              <div className="space-y-3">
+                {client.payments.map((payment) => (
+                  <div key={payment.id} className="rounded-lg border border-line p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="font-semibold">{money(Number(payment.amount), currency)}</p>
+                        <p className="text-sm text-zinc-600">{payment.appointment.service.name} - {shortDate(payment.paidAt)}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <StatusBadge value={payment.status} />
+                        <ConfirmActionButton id={payment.id} kind="deletePayment" label="Удалить" confirmText="Удалить оплату?" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="section space-y-4">
+          <h3 className="font-semibold">Все визиты</h3>
           {client.appointments.length === 0 ? (
             <EmptyState title="Истории записей пока нет." />
           ) : (
@@ -204,46 +297,16 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
               </table>
             </div>
           )}
-        </div>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <div className="panel">
-          <div className="section">
-            <h2 className="text-lg font-semibold">Добавить оплату</h2>
-          </div>
-          <div className="section">
-            <PaymentForm appointments={paymentAppointmentOptions} />
-          </div>
-        </div>
-        <div className="panel">
-          <div className="section">
-            <h2 className="text-lg font-semibold">История оплат</h2>
-          </div>
-          <div className="section">
-            {client.payments.length === 0 ? (
-              <EmptyState title="Оплат пока нет." />
+          <div className="rounded-lg border border-line p-4">
+            <h3 className="mb-3 font-semibold">Архив</h3>
+            {client.isArchived ? (
+              <ConfirmActionButton id={client.id} kind="restoreClient" label="Вернуть клиента" confirmText="Вернуть клиента из архива?" />
             ) : (
-              <div className="space-y-3">
-                {client.payments.map((payment) => (
-                  <div key={payment.id} className="rounded-lg border border-line p-4">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                      <div>
-                        <p className="font-semibold">{money(Number(payment.amount), currency)}</p>
-                        <p className="text-sm text-zinc-600">{payment.appointment.service.name} · {shortDate(payment.paidAt)}</p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <StatusBadge value={payment.status} />
-                        <ConfirmActionButton id={payment.id} kind="deletePayment" label="Удалить" confirmText="Удалить оплату?" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ConfirmActionButton id={client.id} kind="archiveClient" label="Убрать в архив" confirmText="Убрать клиента в архив?" />
             )}
           </div>
         </div>
-      </section>
+      </details>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { saveTemplateAction } from "@/app/actions";
-import { MESSAGE_TEMPLATE_TYPES } from "@/lib/constants";
+import { MESSAGE_TEMPLATE_TYPES, displayLabel } from "@/lib/constants";
 import { templateSchema } from "@/lib/validations";
 import { FieldError, FormError, inputClass, labelClass, textareaClass } from "@/components/forms/FormShell";
 
@@ -67,7 +67,7 @@ export function TemplateForm({
         <select className={inputClass} {...form.register("type")}>
           {MESSAGE_TEMPLATE_TYPES.map((type) => (
             <option key={type} value={type}>
-              {type}
+              {displayLabel(type)}
             </option>
           ))}
         </select>

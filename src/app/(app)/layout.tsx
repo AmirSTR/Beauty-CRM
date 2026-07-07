@@ -14,8 +14,8 @@ export default async function AppLayout({
     <div className="min-h-screen bg-paper">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-line bg-white px-4 py-5 lg:block">
         <div className="mb-8">
-          <p className="text-lg font-semibold text-ink">Beauty CRM</p>
-          <p className="text-xs text-zinc-500">MVP для мастера</p>
+          <p className="text-lg font-semibold text-ink">Моя CRM</p>
+          <p className="text-xs text-zinc-500">Клиенты, записи, деньги</p>
         </div>
         <SidebarNav />
       </aside>
@@ -24,7 +24,7 @@ export default async function AppLayout({
         <header className="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur">
           <div className="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
             <div>
-              <p className="text-base font-semibold lg:hidden">Beauty CRM</p>
+              <p className="text-base font-semibold lg:hidden">Моя CRM</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right">
